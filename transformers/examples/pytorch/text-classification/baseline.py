@@ -82,7 +82,7 @@ for lr in lr_list:
                 cmd += " --dataset_name imdb"
             else:
                 cmd += f" --task_name {task_name}"
-            subprocess.run(cmd, shell=True)
+            subprocess.run(cmd, shell=True)  # @BUG_HERE
             result = json.load(open(result_path))
             metric = float(result[metric_map[task_name]])
             if metric > best_metric:

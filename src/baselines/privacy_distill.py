@@ -62,12 +62,23 @@ for lr in lr_list:
         for epoch in epoch_list:
             output_dir = os.path.join(base_dir, f"HPO_{baseline_type}" ,str(lr), str(bs), str(epoch))
             result_path = os.path.join(output_dir, "eval_results.json")
-            cmd = f"python run_glue.py --model_name_or_path {model_path} \
-                  --task_name {task_name} --fp16 --do_train --do_eval --max_seq_length {max_seq_length} \
-                  --warmup_ratio 0.2 --per_device_train_batch_size {str(bs//num_devices)} --learning_rate {str(lr)} \
-                  --num_train_epochs {epoch} --act {hidden_act} --softmax_act {softmax_act} --output_dir {output_dir} --overwrite_output_dir"
+            cmd = [
+                "python", "run_glue.py",
+                "--model_name_or_path", model_path,
+                "--task_name", task_name,
+                "--fp16", "--do_train", "--do_eval",
+                "--max_seq_length", str(max_seq_length),
+                "--warmup_ratio", "0.2",
+                "--per_device_train_batch_size", str(bs//num_devices),
+                "--learning_rate", str(lr),
+                "--num_train_epochs", str(epoch),
+                "--act", hidden_act,
+                "--softmax_act", softmax_act,
+                "--output_dir", output_dir,
+                "--overwrite_output_dir"
+            ]
 
-            subprocess.run(cmd, shell=True)
+            subprocess.run(cmd, shell=False)
             result = json.load(open(result_path))
             metric = float(result[metric_map[task_name]])
             if metric > best_metric:

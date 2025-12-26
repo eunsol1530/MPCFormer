@@ -66,7 +66,7 @@ def distill():
                --max_seq_length 128 --train_batch_size {bs} --learning_rate {lr_hidden}\
                --do_lower_case --log_path {log_path} --hidden_act {hidden_act} --softmax_act {softmax_act}"
 
-    subprocess.run(cmd, shell=True)
+    subprocess.run(cmd, shell=True)  # @BUG_HERE_START
 
     # distill pred layers
     config = json.load(open(os.path.join(output_dir, "config.json")))
@@ -93,7 +93,7 @@ def distill():
                --hidden_act {hidden_act} \
                --softmax_act {softmax_act}"
 
-    subprocess.run(cmd, shell=True)
+    subprocess.run(cmd, shell=True)  # @BUG_HERE_END
     with open(log_path, "a") as f:
         f.write(f"distilled S2 {hidden_act} {softmax_act} \n")
 
