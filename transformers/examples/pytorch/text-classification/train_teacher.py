@@ -45,7 +45,7 @@ def HPO_teacher_bert():
         cmd = f"python run_glue.py --model_name_or_path bert-base-uncased --task_name {task_name} \
               --do_train --do_eval --max_seq_length 128 --per_device_train_batch_size {bs} --learning_rate {str(lr)} \
               --num_train_epochs 3 --save_steps 200 --act gelu --softmax_act softmax --output_dir {output_dir} --overwrite_output_dir"
-        subprocess.run(cmd, shell=True)
+        subprocess.run(cmd, shell=True)  # @BUG_HERE_START
         result = json.load(open(result_path))
         acc = float(result[metric_name])
         teacher_acc.append(acc)
@@ -93,7 +93,7 @@ def HPO_teacher_roberta():
             cmd = f"python run_glue.py --model_name_or_path roberta-base --task_name {task_name} \
                   --do_train --do_eval --warmup_ratio 0.06 --max_seq_length 128 --per_device_train_batch_size {bs} --learning_rate {str(lr)} \
                   --num_train_epochs 10 --save_steps 200 --act gelu --softmax_act softmax --output_dir {output_dir} --overwrite_output_dir"
-            subprocess.run(cmd, shell=True)
+            subprocess.run(cmd, shell=True)  # @BUG_HERE_END
             result = json.load(open(result_path))
             acc = float(result[metric_name])
             teacher_acc.append(acc)

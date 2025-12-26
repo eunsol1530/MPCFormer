@@ -5,6 +5,7 @@ import shutil
 import itertools
 import argparse
 import torch
+import shlex
 
 exp_name = "ablation"
 
@@ -62,13 +63,15 @@ def distill():
     with open(os.path.join(student_dir, "config.json"), "w") as outfile:
         outfile.write(json_object)
             
-    cmd = f"python task_distill.py --teacher_model {teacher_dir} \
-               --student_model {student_dir} --ablation_ratio {ablation_ratio}\
-               --data_dir {data_dir} --task_name {task_name} --output_dir {output_dir} \
-               --max_seq_length 128 --train_batch_size {bs} --learning_rate {lr_hidden}\
-               --do_lower_case --log_path {log_path} --hidden_act {hidden_act} --softmax_act {softmax_act}"
+    cmd = [
+        "python", "task_distill.py", "--teacher_model", teacher_dir,
+        "--student_model", student_dir, "--ablation_ratio", str(ablation_ratio),
+        "--data_dir", data_dir, "--task_name", task_name, "--output_dir", output_dir,
+        "--max_seq_length", "128", "--train_batch_size", str(bs), "--learning_rate", str(lr_hidden),
+        "--do_lower_case", "--log_path", log_path, "--hidden_act", hidden_act, "--softmax_act", softmax_act
+    ]
 
-    subprocess.run(cmd, shell=True)
+    subprocess.run(cmd, shell=False)
 
     # distill pred layers
     config = json.load(open(os.path.join(output_dir, "config.json")))
@@ -80,24 +83,25 @@ def distill():
     output_dir_stage2 = output_dir + "_stage2"
     result_path = os.path.join(output_dir_stage2, "eval_results.json")
     data_dir = os.path.join("glue_data", task_name)
-    cmd = f"python task_distill.py --pred_distill  \
-               --teacher_model {teacher_dir} \
-               --student_model {output_dir} \
-               --data_dir {data_dir} \
-               --task_name {task_name} \
-               --output_dir {output_dir_stage2} \
-               --do_lower_case \
-               --learning_rate {lr_pred}  \
-               --num_train_epochs  5 \
-               --eval_step 100 \
-               --max_seq_length 128 \
-               --train_batch_size {bs} --log_path {log_path} \
-               --hidden_act {hidden_act} \
-               --softmax_act {softmax_act}"
+    cmd = [
+        "python", "task_distill.py", "--pred_distill",
+        "--teacher_model", teacher_dir,
+        "--student_model", output_dir,
+        "--data_dir", data_dir,
+        "--task_name", task_name,
+        "--output_dir", output_dir_stage2,
+        "--do_lower_case",
+        "--learning_rate", str(lr_pred),
+        "--num_train_epochs", "5",
+        "--eval_step", "100",
+        "--max_seq_length", "128",
+        "--train_batch_size", str(bs), "--log_path", log_path,
+        "--hidden_act", hidden_act,
+        "--softmax_act", softmax_act
+    ]
 
-    subprocess.run(cmd, shell=True)
+    subprocess.run(cmd, shell=False)
     with open(log_path, "a") as f:
         f.write(f"distilled S2 {hidden_act} {softmax_act} \n")
 
 distill()
-

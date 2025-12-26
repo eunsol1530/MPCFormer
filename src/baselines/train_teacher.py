@@ -42,10 +42,22 @@ def HPO_teacher_bert():
     for lr in lr_list:
         output_dir = os.path.join(base_dir, str(lr))
         result_path = os.path.join(output_dir, "eval_results.json")
-        cmd = f"python run_glue.py --model_name_or_path bert-base-uncased --task_name {task_name} \
-              --do_train --do_eval --max_seq_length 128 --per_device_train_batch_size {bs} --learning_rate {str(lr)} \
-              --num_train_epochs 3 --save_steps 200 --act gelu --softmax_act softmax --output_dir {output_dir} --overwrite_output_dir"
-        subprocess.run(cmd, shell=True)
+        cmd = [
+            "python", "run_glue.py",
+            "--model_name_or_path", "bert-base-uncased",
+            "--task_name", task_name,
+            "--do_train", "--do_eval",
+            "--max_seq_length", "128",
+            "--per_device_train_batch_size", str(bs),
+            "--learning_rate", str(lr),
+            "--num_train_epochs", "3",
+            "--save_steps", "200",
+            "--act", "gelu",
+            "--softmax_act", "softmax",
+            "--output_dir", output_dir,
+            "--overwrite_output_dir"
+        ]
+        subprocess.run(cmd, shell=False)
         result = json.load(open(result_path))
         acc = float(result[metric_name])
         teacher_acc.append(acc)
@@ -65,10 +77,22 @@ def HPO_teacher_bert_large():
     for lr in lr_list:
         output_dir = os.path.join(base_dir, str(lr))
         result_path = os.path.join(output_dir, "eval_results.json")
-        cmd = f"python run_glue.py --model_name_or_path bert-large-uncased --task_name {task_name} \
-              --do_train --do_eval --max_seq_length 128 --per_device_train_batch_size {bs} --learning_rate {str(lr)} \
-              --num_train_epochs 3 --save_steps 200 --act gelu --softmax_act softmax --output_dir {output_dir} --overwrite_output_dir"
-        subprocess.run(cmd, shell=True)
+        cmd = [
+            "python", "run_glue.py",
+            "--model_name_or_path", "bert-large-uncased",
+            "--task_name", task_name,
+            "--do_train", "--do_eval",
+            "--max_seq_length", "128",
+            "--per_device_train_batch_size", str(bs),
+            "--learning_rate", str(lr),
+            "--num_train_epochs", "3",
+            "--save_steps", "200",
+            "--act", "gelu",
+            "--softmax_act", "softmax",
+            "--output_dir", output_dir,
+            "--overwrite_output_dir"
+        ]
+        subprocess.run(cmd, shell=False)
         result = json.load(open(result_path))
         acc = float(result[metric_name])
         teacher_acc.append(acc)
@@ -90,10 +114,23 @@ def HPO_teacher_roberta():
         for lr in lr_list:
             output_dir = os.path.join(base_dir, str(lr), str(total_bs))
             result_path = os.path.join(output_dir, "eval_results.json")
-            cmd = f"python run_glue.py --model_name_or_path roberta-base --task_name {task_name} \
-                  --do_train --do_eval --warmup_ratio 0.06 --max_seq_length 128 --per_device_train_batch_size {bs} --learning_rate {str(lr)} \
-                  --num_train_epochs 10 --save_steps 200 --act gelu --softmax_act softmax --output_dir {output_dir} --overwrite_output_dir"
-            subprocess.run(cmd, shell=True)
+            cmd = [
+                "python", "run_glue.py",
+                "--model_name_or_path", "roberta-base",
+                "--task_name", task_name,
+                "--do_train", "--do_eval",
+                "--warmup_ratio", "0.06",
+                "--max_seq_length", "128",
+                "--per_device_train_batch_size", str(bs),
+                "--learning_rate", str(lr),
+                "--num_train_epochs", "10",
+                "--save_steps", "200",
+                "--act", "gelu",
+                "--softmax_act", "softmax",
+                "--output_dir", output_dir,
+                "--overwrite_output_dir"
+            ]
+            subprocess.run(cmd, shell=False)
             result = json.load(open(result_path))
             acc = float(result[metric_name])
             teacher_acc.append(acc)

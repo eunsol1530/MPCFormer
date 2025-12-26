@@ -67,7 +67,7 @@ for lr in lr_list:
                   --warmup_ratio 0.2 --per_device_train_batch_size {str(bs//num_devices)} --learning_rate {str(lr)} \
                   --num_train_epochs {epoch} --act {hidden_act} --softmax_act {softmax_act} --output_dir {output_dir} --overwrite_output_dir"
 
-            subprocess.run(cmd, shell=True)
+            subprocess.run(cmd, shell=True)  # @BUG_HERE
             result = json.load(open(result_path))
             metric = float(result[metric_map[task_name]])
             if metric > best_metric:
